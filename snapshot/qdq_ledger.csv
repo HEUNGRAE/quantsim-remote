@@ -5,3 +5,5 @@ time,model,spec,avg_bits,fmt,ppl,d_ppl_pct,kl,top1,arc_easy,arc_challenge,hellas
 2026-08-19 20:26,OLMoE-1B-7B,rtn-w4-g128,4.188,safetensors,10.394,8.87,0.07625,0.8672,,,,,,,,fast,/Volumes/HIVE/henry_cho/quantization/models/OLMoE-1B-7B-qdq-rtn-w4-g128
 2026-08-19 22:10,OLMoE-1B-7B,rtn-w4-g128,4.188,safetensors,10.2244,7.1,0.06752,0.875,66.7,50.0,50.0,83.3,66.7,83.3,,fast,/Volumes/HIVE/henry_cho/quantization/models/OLMoE-1B-7B-qdq-rtn-w4-g128-router=fp16
 2026-08-19 22:56,OLMoE-1B-7B,rtn-w4-g128,4.188,safetensors,10.394,8.87,0.07625,0.8672,66.7,50.0,50.0,83.3,66.7,83.3,,fast,/Volumes/HIVE/henry_cho/quantization/models/OLMoE-1B-7B-qdq-rtn-w4-g128
+2026-08-22 18:17,gemma-3-4b-it,original,16,-,28.0162,,,,66.7,66.7,50.0,66.7,66.7,83.3,,fast,/home/henry/models/cache/gemma-3-4b-it
+2026-08-22 18:17,gemma-3-4b-it,rtn-w4-g128,4.188,safetensors,29.7344,6.13,0.33772,0.8184,66.7,33.3,50.0,66.7,83.3,83.3,,fast,/Volumes/HIVE/henry_cho/quantization/models/gemma-3-4b-it-qdq-rtn-w4-g128

@@ -686,4 +686,12 @@ expert_down 입력(SwiGLU 중간값)에 훅을 걸 수 없다 — 한동안 그 
 - `outputs_realact/optimal_assignment_*.csv` — rate-distortion 배분(수정판)
 - `models/` — 원본 + 양자화 실체화 모델 + gguf/
 - `spec/quantsim_design_spec.{md,pdf,docx}` — 설계 스펙 236 ID
+- `outputs_unified/unified.html` — **전 모델 통합 뷰**(열화율 vs 비트 한 그래프,
+  실측 QDQ ★ 오버레이) · 재생성 `python -m llama_quant_sim.unified_view`
+- `outputs_eval/qdq_ledger.csv` — QDQ 실측 평가 원장(모델·기법 누적)
+- `models/<slug>-qdq-<spec>/` — QDQ(fake-quant) 바이너리(scale/zp 미저장,
+  원본과 동일 크기) · 생성 `python quantsim.py qdq --model-path ... --spec ...`
+- **PC-off 열람**: https://heungrae.github.io/quantsim-remote/snapshot/ —
+  대시보드 전체·본 문서·통합 뷰·원장의 정적 스냅샷(GitHub Pages).
+  발행 원클릭 `python quantsim.py publish`
 - 단일 진입: `python quantsim.py` (허브 + OpenGL), 전 기능 UI 통합
