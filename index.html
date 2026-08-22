@@ -44,7 +44,10 @@
     cursor:pointer;
   }
   button:active{background:#0ea5e9}
-  .status{font-size:13px;color:#64748b;margin-top:16px;min-height:18px}
+  button:disabled{opacity:.5}
+  .status{font-size:13px;margin-top:16px;min-height:18px;word-break:keep-all}
+  .status.err{color:#f87171}
+  .status.wait{color:#64748b}
   .reset{
     display:inline-block;margin-top:18px;font-size:12px;color:#475569;
     text-decoration:underline;cursor:pointer;background:none;border:0;
@@ -68,20 +71,20 @@
 <div class="card">
   <div id="autoView">
     <div class="spinner"></div>
-    <h1>연결 중…</h1>
-    <p class="note" id="autoNote">저장된 접속 정보로 양자화 스튜디오를 엽니다.</p>
-    <a class="snaplink" href="snapshot/index.html">📦 <b>PC 꺼져있나요?</b> 결과 스냅샷 보기
+    <h1 id="autoTitle">연결 확인 중…</h1>
+    <p class="note" id="autoNote">저장된 접속 정보로 서버 상태를 확인하고 있습니다.</p>
+    <a class="snaplink" href="snapshot/index.html">📦 <b>기다리지 않고 결과만 보기</b>
       <span class="sub">실시간 실행은 안 되지만 대시보드·문서는 항상 열람 가능</span></a>
   </div>
 
   <div id="setupView" class="hidden">
     <div class="icon">⚛️</div>
     <h1>양자화 스튜디오 원격 접속</h1>
-    <p class="note">최초 1회만 접속 토큰을 입력하면, 이후 이 주소로 올 때마다 자동으로
-      연결됩니다. 토큰은 이 기기에만 저장되고 서버로 전송되지 않습니다.</p>
+    <p class="note" id="setupNote">최초 1회만 접속 토큰을 입력하면, 이후 이 주소로 올 때마다
+      자동으로 연결됩니다. 토큰은 이 기기에만 저장되고 서버로 전송되지 않습니다.</p>
     <input id="tokenInput" placeholder="접속 토큰" autocomplete="off"
            autocapitalize="off" spellcheck="false">
-    <button onclick="saveAndGo()">연결</button>
+    <button id="connectBtn" onclick="saveAndGo()">연결</button>
     <div class="status" id="statusMsg"></div>
     <a class="snaplink" href="snapshot/index.html">📦 <b>토큰이 없거나 PC가 꺼져있나요?</b>
       결과 스냅샷 보기
@@ -96,37 +99,82 @@
 const HUB_URL = "https://book-d30lqbr0li.taild8105b.ts.net";
 const KEY = "quantsim_hub_token";
 
-function go(token) {
-  location.replace(HUB_URL + "/?token=" + encodeURIComponent(token));
+// 이동 전에 반드시 /api/ping 으로 토큰을 검증한다 — 예전에는 바로
+// location.replace 로 넘겨버려서, 토큰이 틀렸거나 서버가 꺼져 있어도
+// 사용자는 quantsim-hub 의 401 HTML만 보고 원인을 알 수 없었고,
+// replace 라 뒤로가기로 이 런처에 돌아올 수도 없었다(실제 겪은 버그).
+async function verify(token) {
+  const ctl = new AbortController();
+  const timer = setTimeout(() => ctl.abort(), 6000);
+  try {
+    const r = await fetch(HUB_URL + "/api/ping?token=" + encodeURIComponent(token),
+                          { signal: ctl.signal, cache: "no-store" });
+    clearTimeout(timer);
+    if (!r.ok) return "server_error";
+    const d = await r.json();
+    return d.ok ? "ok" : "bad_token";
+  } catch (e) {
+    clearTimeout(timer);
+    return "unreachable";           // 네트워크 실패 — PC 꺼짐/오프라인 등
+  }
 }
 
-function saveAndGo() {
+function enter(token) {
+  location.href = HUB_URL + "/?token=" + encodeURIComponent(token);
+}
+
+async function saveAndGo() {
   const t = document.getElementById("tokenInput").value.trim();
-  if (!t) {
-    document.getElementById("statusMsg").textContent = "토큰을 입력해주세요.";
-    return;
+  const btn = document.getElementById("connectBtn");
+  const msg = document.getElementById("statusMsg");
+  if (!t) { msg.className = "status err"; msg.textContent = "토큰을 입력해주세요."; return; }
+  btn.disabled = true;
+  msg.className = "status wait"; msg.textContent = "서버 확인 중…";
+  const result = await verify(t);
+  btn.disabled = false;
+  if (result === "ok") {
+    localStorage.setItem(KEY, t);
+    msg.textContent = "연결됨 — 이동합니다…";
+    enter(t);
+  } else if (result === "bad_token") {
+    msg.className = "status err";
+    msg.textContent = "토큰이 올바르지 않습니다. 다시 확인해 주세요.";
+  } else {
+    msg.className = "status err";
+    msg.textContent = "서버에 연결할 수 없습니다 — PC가 꺼져 있거나 오프라인일 수 있어요. "
+      + "아래 '결과 스냅샷 보기'를 이용해 주세요.";
   }
-  localStorage.setItem(KEY, t);
-  go(t);
 }
 
 function resetToken() {
   localStorage.removeItem(KEY);
+  showSetup("");
+}
+
+function showSetup(msg) {
   document.getElementById("autoView").classList.add("hidden");
   document.getElementById("setupView").classList.remove("hidden");
   document.getElementById("resetBtn").classList.add("hidden");
-  document.getElementById("tokenInput").value = "";
+  const m = document.getElementById("statusMsg");
+  if (msg) { m.className = "status err"; m.textContent = msg; }
   document.getElementById("tokenInput").focus();
 }
 
-(function init() {
+(async function init() {
   const saved = localStorage.getItem(KEY);
-  if (saved) {
-    document.getElementById("resetBtn").classList.remove("hidden");
-    setTimeout(() => go(saved), 900);   // 지연 — "스냅샷 보기"/"다른 토큰" 클릭 여유
+  if (!saved) { showSetup(""); return; }
+  document.getElementById("resetBtn").classList.remove("hidden");
+  const result = await verify(saved);
+  if (result === "ok") {
+    enter(saved);
+  } else if (result === "bad_token") {
+    localStorage.removeItem(KEY);
+    showSetup("저장된 토큰이 더 이상 유효하지 않습니다. 새 토큰을 입력해 주세요.");
   } else {
-    document.getElementById("autoView").classList.add("hidden");
-    document.getElementById("setupView").classList.remove("hidden");
+    document.getElementById("autoTitle").textContent = "서버에 연결할 수 없습니다";
+    document.getElementById("autoNote").innerHTML =
+      "PC가 꺼져 있거나 오프라인일 수 있습니다.<br>저장된 토큰은 그대로 유지했습니다.";
+    document.getElementById("resetBtn").classList.remove("hidden");
   }
 })();
 </script>
