@@ -81,22 +81,29 @@
 </div>
 
 <script>
-const DASH = [
-  {name:"llama-3.2-3B",       badge:"실측 9/9 성분",   size:"22M"},
-  {name:"gemma-3-4b-it",      badge:"실측 9/9 성분",   size:"24M"},
-  {name:"Qwen3.5-4B",         badge:"실측 9/9 성분",   size:"23M"},
-  {name:"Qwen3.5-9B",         badge:"실측 9/9 성분",   size:"23M"},
-  {name:"OLMoE-1B-7B",        badge:"실측 10/10 성분", size:"16M"},
-  {name:"gpt-oss-20b",        badge:"실측 10/10 성분", size:"18M"},
-  {name:"Qwen3-30B-A3B",      badge:"실측 10/10 성분", size:"25M"},
-  {name:"gemma-4-26B-A4B-it", badge:"실측 13/13 성분", size:"23M"},
+// 폴백 목록 — dash_meta.json(발행 스크립트가 자동 생성)이 있으면 그걸 우선한다.
+const DASH_FALLBACK = [
+  {name:"llama-3.2-3B",       badge:"✓ Hessian: 실측 9/9 성분",   size:"22M"},
+  {name:"gemma-3-4b-it",      badge:"✓ Hessian: 실측 9/9 성분",   size:"24M"},
+  {name:"Qwen3.5-4B",         badge:"✓ Hessian: 실측 9/9 성분",   size:"23M"},
+  {name:"Qwen3.5-9B",         badge:"✓ Hessian: 실측 9/9 성분",   size:"23M"},
+  {name:"OLMoE-1B-7B",        badge:"✓ Hessian: 실측 10/10 성분", size:"16M"},
+  {name:"gpt-oss-20b",        badge:"✓ Hessian: 실측 10/10 성분", size:"18M"},
+  {name:"Qwen3-30B-A3B",      badge:"✓ Hessian: 실측 10/10 성분", size:"25M"},
+  {name:"gemma-4-26B-A4B-it", badge:"✓ Hessian: 실측 13/13 성분", size:"23M"},
 ];
-document.getElementById("dashGrid").innerHTML = DASH.map(m => `
-  <a class="card" href="dash/${encodeURIComponent(m.name)}.html">
-    <span class="size">${m.size}</span>
-    <div class="name">${m.name}</div>
-    <div class="stat ok">✓ ${m.badge}</div>
-  </a>`).join("");
+function renderDash(list){
+  document.getElementById("dashGrid").innerHTML = list.map(m => `
+    <a class="card" href="dash/${encodeURIComponent(m.name)}.html">
+      <span class="size">${m.size}</span>
+      <div class="name">${m.name}</div>
+      <div class="stat ok">${m.badge || ""}</div>
+    </a>`).join("");
+}
+renderDash(DASH_FALLBACK);
+fetch("dash_meta.json").then(r => r.json())
+  .then(d => { if (d.models && d.models.length) renderDash(d.models); })
+  .catch(() => {});
 
 fetch("meta.json").then(r => r.json()).then(m => {
   const d = new Date(m.generated_utc);

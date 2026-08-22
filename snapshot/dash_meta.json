@@ -1,0 +1,44 @@
+{
+ "models": [
+  {
+   "name": "OLMoE-1B-7B",
+   "badge": "✓ Hessian: 실측 10/10 성분",
+   "size": "15M"
+  },
+  {
+   "name": "Qwen3-30B-A3B",
+   "badge": "✓ Hessian: 실측 10/10 성분",
+   "size": "25M"
+  },
+  {
+   "name": "Qwen3.5-4B",
+   "badge": "✓ Hessian: 실측 9/9 성분",
+   "size": "23M"
+  },
+  {
+   "name": "Qwen3.5-9B",
+   "badge": "✓ Hessian: 실측 9/9 성분",
+   "size": "23M"
+  },
+  {
+   "name": "gemma-3-4b-it",
+   "badge": "✓ Hessian: 실측 9/9 성분",
+   "size": "23M"
+  },
+  {
+   "name": "gemma-4-26B-A4B-it",
+   "badge": "✓ Hessian: 실측 13/13 성분",
+   "size": "22M"
+  },
+  {
+   "name": "gpt-oss-20b",
+   "badge": "✓ Hessian: 실측 10/10 성분",
+   "size": "18M"
+  },
+  {
+   "name": "llama-3.2-3B",
+   "badge": "✓ Hessian: 실측 9/9 성분",
+   "size": "22M"
+  }
+ ]
+}
