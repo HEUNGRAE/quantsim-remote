@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>📦 양자화 스튜디오 — 결과 스냅샷</title>
+<meta name="theme-color" content="#0f172a">
+<style>
+  :root{color-scheme:dark light}
+  *{box-sizing:border-box}
+  html,body{width:100%;overflow-x:hidden}
+  body{
+    margin:0;background:#0f172a;color:#e2e8f0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Pretendard,sans-serif;
+    padding:20px 16px 60px;
+  }
+  .wrap{max-width:720px;margin:0 auto}
+  header{margin-bottom:22px}
+  header a.back{color:#64748b;text-decoration:none;font-size:13px}
+  h1{font-size:20px;margin:10px 0 4px}
+  .badge-off{
+    display:inline-block;background:#164e63;color:#a5f3fc;font-size:11.5px;
+    padding:3px 9px;border-radius:999px;margin-bottom:8px;font-weight:600;
+  }
+  p.note{color:#94a3b8;font-size:13px;line-height:1.6;margin:6px 0 0;word-break:keep-all}
+  #genTime{color:#64748b}
+  h2.sec{font-size:14px;color:#7dd3fc;margin:28px 0 10px;font-weight:600}
+  .doclinks{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+  .doclinks a{
+    background:#1e293b;border:1px solid #334155;color:#e2e8f0;text-decoration:none;
+    padding:10px 14px;border-radius:10px;font-size:13.5px;flex:1;min-width:140px;
+    text-align:center;
+  }
+  .grid{display:grid;grid-template-columns:1fr;gap:10px}
+  @media(min-width:480px){.grid{grid-template-columns:1fr 1fr}}
+  .card{
+    background:#1e293b;border:1px solid #334155;border-radius:12px;
+    padding:14px 16px;text-decoration:none;color:#e2e8f0;display:block;
+  }
+  .card:active{background:#273449}
+  .card .name{font-weight:600;font-size:14.5px;margin-bottom:6px}
+  .card .stat{font-size:12px;color:#94a3b8}
+  .card .stat.ok{color:#34d399}
+  .card .size{float:right;color:#64748b;font-size:11.5px}
+  table.ledger{width:100%;border-collapse:collapse;font-size:12px;margin-top:4px}
+  table.ledger th,table.ledger td{
+    border:1px solid #334155;padding:5px 7px;text-align:left;white-space:nowrap;
+  }
+  table.ledger th{background:#1e293b;position:sticky;top:0}
+  .tblwrap{overflow-x:auto;border-radius:8px;border:1px solid #334155}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <a class="back" href="../index.html">← 원격 접속 홈</a>
+  <div class="badge-off">📦 정적 스냅샷 — PC 꺼져도 열람 가능</div>
+  <h1>양자화 스튜디오 결과</h1>
+  <p class="note">아래는 실시간 서버가 아니라, PC가 켜져 있을 때 미리 만들어 둔
+    <b>결과 스냅샷</b>입니다. 대시보드는 그 시점에 고정된 데이터를 그대로 보여주며
+    (인터랙티브 차트는 정상 동작), 실행·챗봇 비교 같은 기능은 실시간 서버(PC 켜짐
+    필요)에서만 가능합니다. 마지막 갱신: <span id="genTime">확인 중…</span></p>
+</header>
+
+<h2 class="sec">📄 방법론 문서</h2>
+<div class="doclinks">
+  <a href="doc.html?src=FINDINGS.md">FINDINGS.md<br><span style="opacity:.6;font-size:11px">실증 발견 종합</span></a>
+  <a href="doc.html?src=ARCHITECTURES.md">ARCHITECTURES.md<br><span style="opacity:.6;font-size:11px">아키텍처 카탈로그</span></a>
+</div>
+
+<h2 class="sec">📊 모델별 대시보드</h2>
+<div class="grid" id="dashGrid"></div>
+
+<h2 class="sec">📒 QDQ 평가 원장</h2>
+<div class="tblwrap"><table class="ledger" id="ledgerTable"><tr><td>불러오는 중…</td></tr></table></div>
+</div>
+
+<script>
+const DASH = [
+  {name:"llama-3.2-3B",       badge:"실측 9/9 성분",   size:"22M"},
+  {name:"gemma-3-4b-it",      badge:"실측 9/9 성분",   size:"24M"},
+  {name:"Qwen3.5-4B",         badge:"실측 9/9 성분",   size:"23M"},
+  {name:"Qwen3.5-9B",         badge:"실측 9/9 성분",   size:"23M"},
+  {name:"OLMoE-1B-7B",        badge:"실측 10/10 성분", size:"16M"},
+  {name:"gpt-oss-20b",        badge:"실측 10/10 성분", size:"18M"},
+  {name:"Qwen3-30B-A3B",      badge:"실측 10/10 성분", size:"25M"},
+  {name:"gemma-4-26B-A4B-it", badge:"실측 13/13 성분", size:"23M"},
+];
+document.getElementById("dashGrid").innerHTML = DASH.map(m => `
+  <a class="card" href="dash/${encodeURIComponent(m.name)}.html">
+    <span class="size">${m.size}</span>
+    <div class="name">${m.name}</div>
+    <div class="stat ok">✓ ${m.badge}</div>
+  </a>`).join("");
+
+fetch("meta.json").then(r => r.json()).then(m => {
+  const d = new Date(m.generated_utc);
+  document.getElementById("genTime").textContent = d.toLocaleString("ko-KR", {
+    year: "numeric", month: "2-digit", day: "2-digit",
+    hour: "2-digit", minute: "2-digit" });
+}).catch(() => { document.getElementById("genTime").textContent = "알 수 없음"; });
+
+fetch("qdq_ledger.csv").then(r => r.text()).then(csv => {
+  const rows = csv.trim().split("\n").map(l => l.split(","));
+  const [head, ...body] = rows;
+  const keep = ["model","spec","avg_bits","ppl","d_ppl_pct","kl","top1","preset"];
+  const idx = keep.map(k => head.indexOf(k)).filter(i => i >= 0);
+  const keptHead = idx.map(i => head[i]);
+  const html = "<tr>" + keptHead.map(h => `<th>${h}</th>`).join("") + "</tr>" +
+    body.map(r => "<tr>" + idx.map(i => `<td>${r[i] ?? ""}</td>`).join("") + "</tr>").join("");
+  document.getElementById("ledgerTable").innerHTML = html;
+}).catch(e => {
+  document.getElementById("ledgerTable").innerHTML = `<tr><td>로드 실패: ${e}</td></tr>`;
+});
+</script>
+</body>
+</html>
