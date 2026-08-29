@@ -576,3 +576,28 @@ m = AutoModelForCausalLM.from_pretrained(
     attn_implementation="sdpa")  # eager | sdpa | flash_attention_2 | flex_attention
 # sliding/chunked 가족은 flash/flex 가 마스크를 커널에서 처리해 특히 유리
 ```
+
+## 13. Variant 갤러리 — 계열·세대·크기 전수 구조도 (2026-08-29)
+
+`arch_gallery/`(스냅샷 `snapshot/arch_gallery/index.html`)에 21개 variant 의
+전역 구성도+백본 상세도를 수록. **모든 개수·차원은 safetensors 헤더에서 자동
+유도한 실측값** — 원격 variant 는 가중치를 내려받지 않고 HTTP Range 로 헤더만
+읽었다(`reconstruct("hf:org/repo")`, 모델당 수십 KB).
+
+자동 유도가 드러낸 variant 간 차이(수기 스펙에 없던 것 포함):
+
+| variant | 자동으로 드러난 구조 |
+|---|---|
+| gemma-4-E2B | 레이어 그룹 4개 — 전반부 mlp 6144 / 후반부 12288 (깊이-가변 MatFormer), per-layer embed [262144×8960] |
+| gemma-4-E4B | audio_tower 12층 Conformer(FF₁+MHSA+Conv+FF₂, AQT 캘리브 경계 내장), per-layer embed [262144×10752] |
+| gemma-4-26B | full 층(5개)만 v_proj 부재(k_eq_v)·q 8192(sliding 은 4096)·k/v 도 1024 vs 2048 로 상이 |
+| gemma-4-12B/31B | 순수 dense(experts 없음) — 26B 와 같은 세대인데 FFN 구성이 완전히 다름 |
+| Qwen3.6-35B-A3B | linear_attn 30 : full 10 hybrid + 전 층 experts 256×(mi512) + **mtp 서브시스템 844.6M**(multi-token prediction) |
+| Qwen2→2.5→3 | 동일 dense 뼈대에서 head 구성·vocab 만 진화(2.5-VL 은 visual 서브트리 추가) |
+| gpt-oss-20b | 융합 experts 가 MXFP4 블록 저장(`32×[5760,90,16]` + scales) — dequant 전 형식 그대로 노출 |
+
+교훈: 계열 지문·experts 감지는 **접미사 정확일치가 아니라 패턴**으로 —
+gpt-oss 는 `gate_up_proj_blocks`(MXFP4) 라서 `gate_up_proj$` 정확일치가
+llama형으로 오분류했다(실측 사례, 수정 완료). gemma-3 는 layer_types 대신
+`sliding_window_pattern=6` 으로 하이브리드를 표현 — config 로더에서 5:1
+layer_types 를 합성해 통일했다.
