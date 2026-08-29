@@ -595,6 +595,8 @@ m = AutoModelForCausalLM.from_pretrained(
 | Qwen3.6-35B-A3B | linear_attn 30 : full 10 hybrid + 전 층 experts 256×(mi512) + **mtp 서브시스템 844.6M**(multi-token prediction) |
 | Qwen2→2.5→3 | 동일 dense 뼈대에서 head 구성·vocab 만 진화(2.5-VL 은 visual 서브트리 추가) |
 | gpt-oss-20b | 융합 experts 가 MXFP4 블록 저장(`32×[5760,90,16]` + scales) — dequant 전 형식 그대로 노출 |
+| Llama-4-Scout (unsloth 미러) | 총 108.6B — 전 48층 experts 16×(mi 2560), vision 34층(1408) + projector |
+| Llama-4-Maverick (unsloth 미러) | 총 401.6B — **홀수층만** experts 128 + shared_expert[8192×5120] 병존, 짝수층 순수 dense(interleaved MoE 1:1이 그룹 분리로 자동 노출) |
 
 교훈: 계열 지문·experts 감지는 **접미사 정확일치가 아니라 패턴**으로 —
 gpt-oss 는 `gate_up_proj_blocks`(MXFP4) 라서 `gate_up_proj$` 정확일치가

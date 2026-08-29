@@ -503,5 +503,76 @@
    "hybrid": false,
    "tied": false
   }
+ },
+ {
+  "name": "Llama-3.1-8B-Instruct",
+  "source": "hf:unsloth/Llama-3.1-8B-Instruct",
+  "family_section": "llama",
+  "family": "llama형(기본)",
+  "total_params": 8030261248,
+  "subsystems": [
+   "model",
+   "lm_head"
+  ],
+  "map_png": "Llama-3_1-8B-Instruct_map.png",
+  "arch_png": "Llama-3_1-8B-Instruct_arch.png",
+  "badges": {
+   "layers": 32,
+   "hidden": 4096,
+   "heads": "32/8",
+   "experts": 0,
+   "moe_keeps_dense": false,
+   "k_eq_v": false,
+   "hybrid": false,
+   "tied": false
+  }
+ },
+ {
+  "name": "Llama-4-Scout-17B-16E",
+  "source": "hf:unsloth/Llama-4-Scout-17B-16E-Instruct",
+  "family_section": "llama",
+  "family": "gpt-oss형(MoE)",
+  "total_params": 108641793536,
+  "subsystems": [
+   "language_model",
+   "multi_modal_projector",
+   "vision_model"
+  ],
+  "map_png": "Llama-4-Scout-17B-16E_map.png",
+  "arch_png": "Llama-4-Scout-17B-16E_arch.png",
+  "badges": {
+   "layers": 48,
+   "hidden": 5120,
+   "heads": "40/8",
+   "experts": 16,
+   "moe_keeps_dense": false,
+   "k_eq_v": false,
+   "hybrid": false,
+   "tied": false
+  }
+ },
+ {
+  "name": "Llama-4-Maverick-17B-128E",
+  "source": "hf:unsloth/Llama-4-Maverick-17B-128E-Instruct",
+  "family_section": "llama",
+  "family": "융합 3D MoE(gpt-oss/llama4형)",
+  "total_params": 401583781376,
+  "subsystems": [
+   "language_model",
+   "multi_modal_projector",
+   "vision_model"
+  ],
+  "map_png": "Llama-4-Maverick-17B-128E_map.png",
+  "arch_png": "Llama-4-Maverick-17B-128E_arch.png",
+  "badges": {
+   "layers": 48,
+   "hidden": 5120,
+   "heads": "40/8",
+   "experts": 128,
+   "moe_keeps_dense": false,
+   "k_eq_v": false,
+   "hybrid": false,
+   "tied": false
+  }
  }
 ]
