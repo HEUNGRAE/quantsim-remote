@@ -3,7 +3,7 @@
   {
    "name": "OLMoE-1B-7B",
    "badge": "✓ Hessian: 실측 10/10 성분",
-   "size": "15M"
+   "size": "16M"
   },
   {
    "name": "Qwen3-30B-A3B",
@@ -23,7 +23,7 @@
   {
    "name": "gemma-3-4b-it",
    "badge": "✓ Hessian: 실측 9/9 성분",
-   "size": "23M"
+   "size": "24M"
   },
   {
    "name": "gemma-4-26B-A4B-it",
