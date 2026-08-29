@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>🧬 아키텍처 variant 갤러리</title>
+<meta name="theme-color" content="#0f172a">
+<style>
+  :root{color-scheme:dark light}
+  *{box-sizing:border-box}
+  html,body{width:100%;overflow-x:hidden}
+  body{
+    margin:0;background:#0f172a;color:#e2e8f0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Pretendard,sans-serif;
+    padding:20px 14px 60px;
+  }
+  .wrap{max-width:1080px;margin:0 auto}
+  header a.back{color:#64748b;text-decoration:none;font-size:13px}
+  h1{font-size:20px;margin:10px 0 4px}
+  p.note{color:#94a3b8;font-size:13px;line-height:1.6;margin:6px 0 0;word-break:keep-all}
+  h2.sec{font-size:15px;color:#7dd3fc;margin:30px 0 12px;font-weight:600;
+    border-bottom:1px solid #1e293b;padding-bottom:8px}
+  .grid{display:grid;grid-template-columns:1fr;gap:14px}
+  @media(min-width:760px){.grid{grid-template-columns:1fr 1fr}}
+  .card{background:#1e293b;border:1px solid #334155;border-radius:14px;padding:14px 16px}
+  .card .name{font-weight:700;font-size:15px;margin-bottom:6px}
+  .badges{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+  .b{font-size:10.5px;padding:2px 8px;border-radius:999px;background:#0f172a;
+     border:1px solid #334155;color:#94a3b8}
+  .b.hi{border-color:#38bdf8;color:#7dd3fc}
+  .b.moe{border-color:#f59e0b;color:#fcd34d}
+  .b.vl{border-color:#34d399;color:#6ee7b7}
+  .b.err{border-color:#f87171;color:#fca5a5}
+  .imgs{display:flex;flex-direction:column;gap:8px}
+  .imgs a{display:block;background:#fff;border-radius:8px;overflow:hidden}
+  .imgs img{width:100%;display:block}
+  .cap{font-size:11px;color:#64748b;margin:2px 0 0}
+  .src{font-size:11px;color:#475569;margin-top:8px;word-break:break-all}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <a class="back" href="../index.html">← 결과 스냅샷 홈</a>
+  <h1>🧬 아키텍처 variant 갤러리</h1>
+  <p class="note">계열·세대·크기별 variant 의 <b>전역 구성도</b>(vision/audio tower ·
+    MoE router/experts · per-layer 임베딩 등 서브시스템)와 <b>백본 상세도</b>(연산 흐름 ·
+    GQA · 하이브리드 띠)를 한곳에 모았습니다. 모든 개수·차원은 각 체크포인트의
+    safetensors 헤더에서 <b>자동 유도</b>한 실측값입니다 — 원격 variant 는 가중치를
+    내려받지 않고 헤더만 읽어(Range 요청) 그렸습니다.</p>
+</header>
+<div id="content"><p class="note">gallery.json 불러오는 중…</p></div>
+</div>
+
+<script>
+const SECTIONS = [
+  ["gemma", "Gemma 계열 — E2B/E4B(MatFormer) · 12B/31B(dense) · 26B(dense+MoE 병렬)"],
+  ["qwen",  "Qwen 계열 — 2 → 2.5 → 3 → 3.5 → 3.6 · VL · MoE(A3B)"],
+  ["llama", "Llama 계열"],
+  ["etc",   "기타 — OLMoE(순수 MoE) · gpt-oss(융합 MoE)"],
+];
+fetch("gallery.json").then(r => r.json()).then(rows => {
+  const el = document.getElementById("content");
+  el.innerHTML = SECTIONS.map(([key, title]) => {
+    const items = rows.filter(r => r.family_section === key);
+    if (!items.length) return "";
+    return `<h2 class="sec">${title}</h2><div class="grid">` + items.map(r => {
+      const b = r.badges || {};
+      const badges = [];
+      if (r.total_params) badges.push(`<span class="b hi">${(r.total_params/1e9).toFixed(2)}B</span>`);
+      if (r.family) badges.push(`<span class="b">${r.family}</span>`);
+      if (b.layers) badges.push(`<span class="b">${b.layers}층 · h${b.hidden} · ${b.heads}H</span>`);
+      if (b.experts) badges.push(`<span class="b moe">MoE ${b.experts}E${b.moe_keeps_dense ? " + dense 병렬" : ""}</span>`);
+      if (b.hybrid) badges.push(`<span class="b">hybrid 층배치</span>`);
+      if (b.k_eq_v) badges.push(`<span class="b moe">k_eq_v</span>`);
+      if ((r.subsystems||[]).some(s => /vision/i.test(s))) badges.push(`<span class="b vl">vision tower</span>`);
+      if ((r.subsystems||[]).some(s => /audio/i.test(s))) badges.push(`<span class="b vl">audio tower</span>`);
+      if (b.tied === false) badges.push(`<span class="b">untied lm_head</span>`);
+      if (r.error) badges.push(`<span class="b err">실패: ${r.error}</span>`);
+      if (r.arch_error) badges.push(`<span class="b err">백본도 실패</span>`);
+      const imgs = [
+        r.map_png ? `<a href="${r.map_png}"><img loading="lazy" src="${r.map_png}" alt="전역 구성도"></a><p class="cap">전역 구성도 — 서브시스템·그룹·차원 (탭하면 원본)</p>` : "",
+        r.arch_png ? `<a href="${r.arch_png}"><img loading="lazy" src="${r.arch_png}" alt="백본 상세도"></a><p class="cap">백본 상세도 — 연산 흐름·GQA·하이브리드 (탭하면 원본)</p>` : "",
+      ].join("");
+      return `<div class="card"><div class="name">${r.name}</div>
+        <div class="badges">${badges.join("")}</div>
+        <div class="imgs">${imgs}</div>
+        <p class="src">source: ${r.source}</p></div>`;
+    }).join("") + `</div>`;
+  }).join("") || "<p class='note'>항목 없음</p>";
+}).catch(e => {
+  document.getElementById("content").innerHTML = `<p class="note">로드 실패: ${e}</p>`;
+});
+</script>
+</body>
+</html>
