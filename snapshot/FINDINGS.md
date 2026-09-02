@@ -328,6 +328,10 @@ text_config 라 로더/수집기의 복합 구조 대응이 필수였다(카탈�
 
 ## 4.6 MoE 아키텍처 지형 — 라우터는 강건하다 (합성 Hessian의 착시를 실측이 정정)
 
+> **갱신(2026-09-03, ⑩-g)**: 이후 3모델 실측으로 처방이 확장됐다 — router
+> 단독보다 **attention fp16 이 대등 이상**이고 둘은 가산적이라, W4 보호
+> 1순위 세트는 "attention+router fp16"이다. 상세는 ⑩-g.
+
 MoE 전용 성분(expert_gate/up/down · router)을 신설하고 OLMoE-1B-7B(64 전문가)의
 실가중치 지형을 측정했다 (`outputs_OLMoE-1B-7B/`, 57기법 × 10성분).
 **실제 활성화 Hessian**(레이어 8, forward 수집)을 쓴 최종 결과:
@@ -690,7 +694,30 @@ avg_bits_incl_fp16 산술 정합 — attention fp16 유지분 +0.42bit 그대로
 **gemma-4-26B 최종 처방**: ①안전선 **W8**(KL 0.52) ②절충안
 **W6+attention fp16**(6.83bit — W8 대비 저장 −17%, KL 1.4배) ③W4 는
 어떤 부분 보호로도 불가. 전 회차 수치는
-outputs_eval/g4_ablation_ledger.csv 에 누적돼 있다. 이상 신호 앞에서 '모델이 고장'보다
+outputs_eval/g4_ablation_ledger.csv 에 누적돼 있다.
+
+**⑩-g 일반화 검증 — "attention 우선 보호"는 MoE 일반 법칙이다 (3모델 실측).**
+gemma-4 의 발견이 특이 구조(k_eq_v·병렬 MoE) 탓인지 검증하기 위해
+OLMoE(64E)·Qwen3-30B(128E)에 같은 W4+attention fp16 을 실측했다(preset=fast,
+원장 overrides 컬럼으로 구분):
+
+| 모델 | uniform W4 | + attn fp16 | 상대 개선 |
+|---|---|---|---|
+| OLMoE-1B-7B (64E) | Δ+8.87% · KL 0.076 | Δ+7.03% · KL 0.061 | ΔPPL −21% · KL −20% |
+| Qwen3-30B-A3B (128E) | Δ+15.25% · KL 0.228 | **Δ+7.94% · KL 0.144** | **ΔPPL −48% · KL −37%** |
+| gemma-4-26B (128E, 병렬) | KL 5.38 (tmpl) | KL 3.84 | KL −29% |
+
+세 MoE 전부에서 attention fp16(파라미터 3~6%)이 최대급 단일 보호로 확인됐다.
+특히 **128E 두 모델에서 개선이 크다** — 전문가 수가 많을수록 expert 당 토큰
+노출이 희석되어 experts 오차 기여는 줄고(gemma-4 실증: 파라미터 85% 보호가
+−4%), 상대적으로 모든 토큰이 통과하는 attention 이 병목이 된다는 서사와
+정합한다(⑤-c 의 "128E 좁은 여유"의 원인 후보).
+
+**가산성**: OLMoE 에서 attention+router 동시 fp16 = Δ+5.49% · KL 0.050 —
+단독 개선의 합(예측 +5.26%)과 93% 일치, KL 은 사실상 완전 가산. 두 성분의
+오차는 독립 채널이다. **갱신된 MoE 실전 처방(§4.6 대체)**: W4 에서는
+"attention+router fp16"(파라미터 ~7%)이 저비용 1순위 보호 세트이고, experts
+보호는 후순위다(구조가 매우 민감한 계열(gemma-4형)은 W4 자체가 불가 — ⑩-f). 이상 신호 앞에서 '모델이 고장'보다
 '지표가 부적합'을 먼저 5분짜리 실험으로 배제하라.
 
 **⑩-a PPL 열화와 KL 이 모델 순위를 반대로 매긴다** — gemma 는 ΔPPL 최소(+6.1%)

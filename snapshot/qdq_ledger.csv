@@ -1,14 +1,17 @@
-time,model,spec,avg_bits,fmt,ppl,d_ppl_pct,kl,top1,arc_easy,arc_challenge,hellaswag,piqa,winogrande,boolq,gsm8k,preset,out_dir
-2026-08-19 19:38,llama32-3b,original,16,-,8.6682,,,,,,,,,,,fast,/home/henry/models/Llama-3.2-3B
-2026-08-19 19:38,llama32-3b,rtn-w4-g128,4.188,safetensors,9.9863,15.21,0.14311,0.8359,,,,,,,,fast,/Volumes/HIVE/henry_cho/quantization/models/llama32-3b-qdq-rtn-w4-g128
-2026-08-19 20:26,OLMoE-1B-7B,original,16,-,9.5468,,,,,,,,,,,fast,/home/henry/models/cache/OLMoE-1B-7B
-2026-08-19 20:26,OLMoE-1B-7B,rtn-w4-g128,4.188,safetensors,10.394,8.87,0.07625,0.8672,,,,,,,,fast,/Volumes/HIVE/henry_cho/quantization/models/OLMoE-1B-7B-qdq-rtn-w4-g128
-2026-08-19 22:10,OLMoE-1B-7B,rtn-w4-g128,4.188,safetensors,10.2244,7.1,0.06752,0.875,66.7,50.0,50.0,83.3,66.7,83.3,,fast,/Volumes/HIVE/henry_cho/quantization/models/OLMoE-1B-7B-qdq-rtn-w4-g128-router=fp16
-2026-08-19 22:56,OLMoE-1B-7B,rtn-w4-g128,4.188,safetensors,10.394,8.87,0.07625,0.8672,66.7,50.0,50.0,83.3,66.7,83.3,,fast,/Volumes/HIVE/henry_cho/quantization/models/OLMoE-1B-7B-qdq-rtn-w4-g128
-2026-08-22 18:17,gemma-3-4b-it,original,16,-,28.0162,,,,66.7,66.7,50.0,66.7,66.7,83.3,,fast,/home/henry/models/cache/gemma-3-4b-it
-2026-08-22 18:17,gemma-3-4b-it,rtn-w4-g128,4.188,safetensors,29.7344,6.13,0.33772,0.8184,66.7,33.3,50.0,66.7,83.3,83.3,,fast,/Volumes/HIVE/henry_cho/quantization/models/gemma-3-4b-it-qdq-rtn-w4-g128
-2026-08-22 18:51,Qwen3.5-4B,original,16,-,11.0324,,,,83.3,50.0,16.7,100.0,66.7,100.0,,fast,/home/henry/models/cache/Qwen3.5-4B
-2026-08-22 18:51,Qwen3.5-4B,rtn-w4-g128,4.188,safetensors,11.8705,7.6,0.07234,0.877,83.3,50.0,33.3,83.3,66.7,83.3,,fast,/Volumes/HIVE/henry_cho/quantization/models/Qwen3.5-4B-qdq-rtn-w4-g128
-2026-08-23 16:30,Qwen3-30B-A3B,original,16,-,11.5591,,,,,,,,,,,fast,/home/henry/models/cache/Qwen3-30B-A3B
-2026-08-23 16:30,Qwen3-30B-A3B,rtn-w4-g128,4.188,safetensors,13.3216,15.25,0.22752,0.8574,,,,,,,,fast,/Volumes/HIVE/henry_cho/quantization/models/Qwen3-30B-A3B-qdq-rtn-w4-g128
-2026-08-23 20:12,gemma-4-26B-A4B-it,rtn-w4-g128,4.188,safetensors,,,5.38178,0.3213,,,,,,,,tmpl-kl(PPL부적용 모델용),/Volumes/HIVE/henry_cho/quantization/models/gemma-4-26B-A4B-it-qdq-rtn-w4-g128
+time,model,spec,overrides,avg_bits,fmt,ppl,d_ppl_pct,kl,top1,arc_easy,arc_challenge,hellaswag,piqa,winogrande,boolq,gsm8k,preset,out_dir
+2026-08-19 19:38,llama32-3b,original,,16,-,8.6682,,,,,,,,,,,fast,/home/henry/models/Llama-3.2-3B
+2026-08-19 19:38,llama32-3b,rtn-w4-g128,,4.188,safetensors,9.9863,15.21,0.14311,0.8359,,,,,,,,fast,/Volumes/HIVE/henry_cho/quantization/models/llama32-3b-qdq-rtn-w4-g128
+2026-08-19 20:26,OLMoE-1B-7B,original,,16,-,9.5468,,,,,,,,,,,fast,/home/henry/models/cache/OLMoE-1B-7B
+2026-08-19 20:26,OLMoE-1B-7B,rtn-w4-g128,,4.188,safetensors,10.394,8.87,0.07625,0.8672,,,,,,,,fast,/Volumes/HIVE/henry_cho/quantization/models/OLMoE-1B-7B-qdq-rtn-w4-g128
+2026-08-19 22:10,OLMoE-1B-7B,rtn-w4-g128,w4-g128-router=fp16,4.188,safetensors,10.2244,7.1,0.06752,0.875,66.7,50.0,50.0,83.3,66.7,83.3,,fast,/Volumes/HIVE/henry_cho/quantization/models/OLMoE-1B-7B-qdq-rtn-w4-g128-router=fp16
+2026-08-19 22:56,OLMoE-1B-7B,rtn-w4-g128,,4.188,safetensors,10.394,8.87,0.07625,0.8672,66.7,50.0,50.0,83.3,66.7,83.3,,fast,/Volumes/HIVE/henry_cho/quantization/models/OLMoE-1B-7B-qdq-rtn-w4-g128
+2026-08-22 18:17,gemma-3-4b-it,original,,16,-,28.0162,,,,66.7,66.7,50.0,66.7,66.7,83.3,,fast,/home/henry/models/cache/gemma-3-4b-it
+2026-08-22 18:17,gemma-3-4b-it,rtn-w4-g128,,4.188,safetensors,29.7344,6.13,0.33772,0.8184,66.7,33.3,50.0,66.7,83.3,83.3,,fast,/Volumes/HIVE/henry_cho/quantization/models/gemma-3-4b-it-qdq-rtn-w4-g128
+2026-08-22 18:51,Qwen3.5-4B,original,,16,-,11.0324,,,,83.3,50.0,16.7,100.0,66.7,100.0,,fast,/home/henry/models/cache/Qwen3.5-4B
+2026-08-22 18:51,Qwen3.5-4B,rtn-w4-g128,,4.188,safetensors,11.8705,7.6,0.07234,0.877,83.3,50.0,33.3,83.3,66.7,83.3,,fast,/Volumes/HIVE/henry_cho/quantization/models/Qwen3.5-4B-qdq-rtn-w4-g128
+2026-08-23 16:30,Qwen3-30B-A3B,original,,16,-,11.5591,,,,,,,,,,,fast,/home/henry/models/cache/Qwen3-30B-A3B
+2026-08-23 16:30,Qwen3-30B-A3B,rtn-w4-g128,,4.188,safetensors,13.3216,15.25,0.22752,0.8574,,,,,,,,fast,/Volumes/HIVE/henry_cho/quantization/models/Qwen3-30B-A3B-qdq-rtn-w4-g128
+2026-08-23 20:12,gemma-4-26B-A4B-it,rtn-w4-g128,,4.188,safetensors,,,5.38178,0.3213,,,,,,,,tmpl-kl(PPL부적용 모델용),/Volumes/HIVE/henry_cho/quantization/models/gemma-4-26B-A4B-it-qdq-rtn-w4-g128
+2026-09-02 22:24,OLMoE-1B-7B,rtn-w4-g128,k_proj=fp16 o_proj=fp16 q_proj=fp16 v_proj=fp16,4.188,safetensors,10.2178,7.03,0.06109,0.877,66.7,50.0,50.0,83.3,83.3,83.3,,fast,/Volumes/HIVE/henry_cho/quantization/models/OLMoE-1B-7B-qdq-rtn-w4-g128-q_proj=fp16_k_proj=fp16_v_proj=fp16_o_proj=fp16
+2026-09-02 23:35,OLMoE-1B-7B,rtn-w4-g128,k_proj=fp16 o_proj=fp16 q_proj=fp16 router=fp16 v_proj=fp16,4.188,safetensors,10.0706,5.49,0.05015,0.8926,66.7,50.0,50.0,83.3,66.7,83.3,,fast,/Volumes/HIVE/henry_cho/quantization/models/OLMoE-1B-7B-qdq-rtn-w4-g128-q_proj=fp16_k_proj=fp16_v_proj=fp16_o_proj=fp16_router=fp16
+2026-09-03 05:16,Qwen3-30B-A3B,rtn-w4-g128,k_proj=fp16 o_proj=fp16 q_proj=fp16 v_proj=fp16,4.188,safetensors,12.4767,7.94,0.14435,0.8848,83.3,50.0,50.0,66.7,83.3,83.3,,fast,/Volumes/HIVE/henry_cho/quantization/models/Qwen3-30B-A3B-qdq-rtn-w4-g128-q_proj=fp16_k_proj=fp16_v_proj=fp16_o_proj=fp16
